@@ -38,7 +38,7 @@ app.use('/graphql', graphqlHttp({
     }
 
     type RootMutation {
-      createEvent(eventInput: EventInput): String
+      createEvent(eventInput: EventInput): Event
     }
 
     schema {
@@ -50,17 +50,20 @@ app.use('/graphql', graphqlHttp({
   rootValue: {
     // 'events' resolver corresponding to the 'events' RootQuery 
     events: () => {
-      return ['C8691', 'NBr252', 'Le9175']
+      return events
     },
     // 'createEvent' resolver corresponding to the 'createEvent' RootMutation (which accepts arguments (args) === name: String)
     createEvent: (args) => {
       const event = {
         _id: Math.random().toString(),
-        title: args.title,
-        description: args.description
-        price: +args.price,
-        date: new Date().toISOString()
+        title: args.eventInput.title,
+        description: args.eventInput.description,
+        price: +args.eventInput.price,
+        date: args.eventInput.date
       }
+      console.log(args)
+      events.push(event)
+      return event
     }
   },
   graphiql: true
