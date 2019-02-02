@@ -15,7 +15,17 @@ app.use(bodyParser.json())
 app.use('/graphql', graphqlHttp({
   // configure graphql api
   schema: buildSchema(`
-    
+    type RootQuery {
+
+    }
+
+    type RootMutation {
+
+    }
+    schema {
+      query: RootQuery
+      mutation: RootMutation
+    }
   `),
   // resolver functions that match schema endpoints
   rootValue: {
