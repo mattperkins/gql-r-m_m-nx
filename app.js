@@ -16,11 +16,11 @@ app.use('/graphql', graphqlHttp({
   // configure graphql api
   schema: buildSchema(`
     type RootQuery {
-
+      events: [String!]!
     }
 
     type RootMutation {
-
+      createEvent(name: String): String
     }
     schema {
       query: RootQuery
