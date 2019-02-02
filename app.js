@@ -5,6 +5,9 @@ const { buildSchema } = require("graphql")
 
 const app = express()
 
+// temp data
+const events = []
+
 app.use(bodyParser.json())
 
 // app.get('/', (req, res, next) => {
@@ -51,8 +54,13 @@ app.use('/graphql', graphqlHttp({
     },
     // 'createEvent' resolver corresponding to the 'createEvent' RootMutation (which accepts arguments (args) === name: String)
     createEvent: (args) => {
-      const eventName = args.name
-      return eventName
+      const event = {
+        _id: Math.random().toString(),
+        title: args.title,
+        description: args.description
+        price: +args.price,
+        date: new Date().toISOString()
+      }
     }
   },
   graphiql: true
