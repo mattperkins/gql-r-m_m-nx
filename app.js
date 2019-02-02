@@ -14,7 +14,9 @@ app.use(bodyParser.json())
 // middleware to parse schema queries and resolvers
 app.use('/graphql', graphqlHttp({
   // configure graphql api
-  schema: null,
+  schema: buildSchema(`
+    
+  `),
   // resolver functions that match schema endpoints
   rootValue: {
 
