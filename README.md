@@ -14,7 +14,7 @@
 generate date from js browser console
 new Date().toISOString()
 
-
+#### createEvent
 mutation {
   createEvent(eventInput: {
     title: "A test",
@@ -36,5 +36,17 @@ query {
     title
     description
     price
+  }
+}
+
+#### createUser
+mutation{
+  createUser(userInput: 
+  {
+    email: "test@email.com", 
+    password: "test1234"})
+  {
+    email
+    password
   }
 }
