@@ -4,6 +4,9 @@ const graphqlHttp = require("express-graphql")
 const { buildSchema } = require("graphql")
 const mongoose = require("mongoose")
 
+// consume model / schema
+const Event = require("./models/event")
+
 const app = express()
 
 // temp data
@@ -55,13 +58,12 @@ app.use('/graphql', graphqlHttp({
     },
     // 'createEvent' resolver corresponding to the 'createEvent' RootMutation (which accepts arguments (args) === name: String)
     createEvent: (args) => {
-      const event = {
-        _id: Math.random().toString(),
+      const event = new Event({
         title: args.eventInput.title,
         description: args.eventInput.description,
         price: +args.eventInput.price,
-        date: args.eventInput.date
-      }
+        date: new Date(args.eventInput.date)
+      })
       console.log(args)
       events.push(event)
       return event
