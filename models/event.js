@@ -19,6 +19,7 @@ const eventSchema = new Schema({
     type: Date,
     required: true
   },
+  // mongoose method to create relationship with User model
   creator: {
     type: Schema.Types.ObjectId,
     ref: "User"
