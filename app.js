@@ -2,6 +2,7 @@ const express = require("express")
 const bodyParser = require("body-parser")
 const graphqlHttp = require("express-graphql")
 const { buildSchema } = require("graphql")
+const mongoose = require("mongoose")
 
 const app = express()
 
@@ -69,5 +70,11 @@ app.use('/graphql', graphqlHttp({
   graphiql: true
 }))
 
+const { MONGO_USER, MONGO_PASS, MONGO_DB, MONGO_PORT, MONGO_NAME } = process.env
 const PORT = 3000
-app.listen(PORT, console.log(`Server running on ${PORT}`))
+mongoose.connect(`mongodb://${MONGO_USER}:${MONGO_PASS}@${MONGO_DB}:${MONGO_PORT}/${MONGO_NAME}`, { useNewUrlParser: true })
+  .then(() => {
+    app.listen(PORT, console.log(`Server running on ${PORT} with database connection established`))
+  }).catch(err => {
+    console.log(err)
+  })
