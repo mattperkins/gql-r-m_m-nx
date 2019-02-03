@@ -9,9 +9,6 @@ const Event = require("./models/event")
 
 const app = express()
 
-// temp data
-const events = []
-
 app.use(bodyParser.json())
 
 // app.get('/', (req, res, next) => {
@@ -65,7 +62,6 @@ app.use('/graphql', graphqlHttp({
         date: new Date(args.eventInput.date)
       })
       console.log(args)
-      events.push(event)
       return event
     }
   },
