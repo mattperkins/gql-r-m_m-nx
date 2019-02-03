@@ -88,27 +88,24 @@ module.exports = {
       throw err
     }
   },
-  createUser: args => {
-    return User.findOne({
-      email: args.userInput.email
-    }).then(user => {
+  createUser: async args => {
+    try {
+      const createUser = await User.findOne({
+        email: args.userInput.email
+      })
       if (user) {
         throw new Error('User already exists!')
       }
-      return bcrypt
+      const hashedPassword = await bcrypt
         .hash(args.userInput.password, 12)
-    }).then(hashedPassword => {
       const user = new User({
         email: args.userInput.email,
         password: hashedPassword
       })
-      return user.save()
-    })
-      .then(result => {
-        return { ...result._doc, password: null, _id: result.id }
-      })
-      .catch(err => {
-        throw err
-      })
+      const result = await user.save()
+      return { ...result._doc, password: null, _id: result.id }
+    } catch (err) {
+      throw err
+    }
   }
 }
