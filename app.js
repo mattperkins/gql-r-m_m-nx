@@ -49,9 +49,21 @@ app.use('/graphql', graphqlHttp({
   `),
   // schema logic 'resolvers' = functions that match schema endpoints 
   rootValue: {
-    // 'events' resolver corresponding to the 'events' RootQuery 
+    // 'events' resolver corresponding to the 'events:[Event!]' RootQuery 
     events: () => {
-      return events
+      // mongoose call static methods on the Event constructor 
+      //  'return' indicates it as async to graphql
+      return Event.find()
+        .then(events => {
+          return events.map(event => {
+            // core event data properties sans meta (via mongoose)
+            // _id:event.id = mongoose method/convesion of id to graphql id
+            return { ...event._doc, _id: event.id }
+          })
+        })
+        .catch(err => {
+          throw err
+        })
     },
     // 'createEvent' resolver corresponding to the 'createEvent' RootMutation (which accepts arguments (args) === name: String)
     createEvent: (args) => {
@@ -67,8 +79,9 @@ app.use('/graphql', graphqlHttp({
         .save()
         .then(result => {
           console.log(result)
-          // core properties sans meta (via mongoose)
-          return { ...result._doc }
+          // core event data properties sans meta (via mongoose)
+          // _id = alternative mongoose method/convesion of id to graphql id
+          return { ...result._doc, _id: result._doc._id.toString() }
         }).catch(err => {
           console.log(err)
           throw err
