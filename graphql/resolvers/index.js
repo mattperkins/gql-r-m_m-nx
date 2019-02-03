@@ -37,25 +37,22 @@ const user = async userId => {
 }
 
 
+
 module.exports = {
-  // 'events' resolver corresponding to the 'events:[Event!]' RootQuery 
-  events: () => {
-    // mongoose call static methods on the Event constructor 
-    //  'return' indicates it as async to graphql
-    return Event.find()
-      .then(events => {
-        return events.map(event => {
-          return {
-            ...event._doc,
-            _id: event.id,
-            date: new Date(event._doc.date).toISOString(),
-            creator: user.bind(this, event._doc.creator)
-          }
-        })
+  events: async () => {
+    try {
+      const events = await Event.find()
+      return events.map(event => {
+        return {
+          ...event._doc,
+          _id: event.id,
+          date: new Date(event._doc.date).toISOString(),
+          creator: user.bind(this, event._doc.creator)
+        }
       })
-      .catch(err => {
-        throw err
-      })
+    } catch (err) {
+      throw err
+    }
   },
   // 'createEvent' resolver corresponding to the 'createEvent' RootMutation (which accepts arguments (args) === name: String)
   createEvent: args => {
