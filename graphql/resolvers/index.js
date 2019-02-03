@@ -54,8 +54,8 @@ module.exports = {
       throw err
     }
   },
-  // 'createEvent' resolver corresponding to the 'createEvent' RootMutation (which accepts arguments (args) === name: String)
-  createEvent: args => {
+
+  createEvent: async args => {
     const event = new Event({
       title: args.eventInput.title,
       description: args.eventInput.description,
@@ -65,30 +65,26 @@ module.exports = {
     })
     console.log(args)
     let createdEvent
-    // Event object based on mongoose model
-    return event
-      .save()
-      .then(result => {
-        createdEvent = {
-          ...result._doc,
-          _id: result._doc._id.toString(),
-          creator: user.bind(this, result._doc.creator)
-        }
-        return User.findById('5c57480aaea91030abe18c8b')
-        console.log(result)
-      }).then(user => {
-        if (!user) {
-          throw new Error('User not found')
-        }
-        user.createdEvents.push(event)
-        return user.save()
-      }).then(result => {
-        return createdEvent
-      })
-      .catch(err => {
-        console.log(err)
-        throw err
-      })
+    try {
+      const result = await event
+        .save()
+      createdEvent = {
+        ...result._doc,
+        _id: result._doc._id.toString(),
+        creator: user.bind(this, result._doc.creator)
+      }
+      const user = await User.findById('5c57480aaea91030abe18c8b')
+      if (!user) {
+        throw new Error('User not found')
+      }
+      user.createdEvents.push(event)
+      await user.save()
+
+      return createdEvent
+    } catch (err) {
+      console.log(err)
+      throw err
+    }
     return event
   },
   createUser: args => {
@@ -98,20 +94,16 @@ module.exports = {
       if (user) {
         throw new Error('User already exists!')
       }
-      // 12 rounds of salt
       return bcrypt
         .hash(args.userInput.password, 12)
     }).then(hashedPassword => {
-      // add logic to create user in db
       const user = new User({
-        // from graphql UserInput schema definitions
         email: args.userInput.email,
         password: hashedPassword
       })
       return user.save()
     })
       .then(result => {
-        // using virtual mongoose getter for _id (see other _id comments)
         return { ...result._doc, password: null, _id: result.id }
       })
       .catch(err => {
