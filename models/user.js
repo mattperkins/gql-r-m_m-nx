@@ -11,7 +11,7 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
-  // mongoose methods to create relationship with Event model
+  // mongoose method to create relationship with Event model
   createdEvents: [
     {
       type: Schema.Types.ObjectId,
