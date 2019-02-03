@@ -27,12 +27,14 @@ app.use('/graphql', graphqlHttp({
       description: String!
       price: Float!
       date: String!
+      creator: User!
     }
 
     type User {
       _id: ID!
       email: String!
       password: String
+      createdEvents: [Event!]
     }
 
     input EventInput {
@@ -101,7 +103,7 @@ app.use('/graphql', graphqlHttp({
         .save()
         .then(result => {
           createdEvent = { ...result._doc, _id: result._doc._id.toString() }
-          return User.findById('5c5711f9759fc62c1785d591')
+          return User.findById('5c57480aaea91030abe18c8b')
           console.log(result)
         }).then(user => {
           if (!user) {
