@@ -104,7 +104,8 @@ app.use('/graphql', graphqlHttp({
     },
     createUser: args => {
       // 12 rounds of salt
-      bcrypt.hash(args.userInput.password, 12)
+      return bcrypt
+        .hash(args.userInput.password, 12)
         .then(hashedPassword => {
           // add logic to create user in db
           const user = new User({
@@ -112,6 +113,11 @@ app.use('/graphql', graphqlHttp({
             email: args.userInput.email,
             password: hashedPassword
           })
+          return user.save()
+        })
+        .then(result => {
+          // using virtual mongoose getter for _id (see other _id comments)
+          return { ...result._doc, _id: result.id }
         })
         .catch(err => {
           throw err
