@@ -15,8 +15,6 @@ generate date from js browser console
 new Date().toISOString()
 
 
-
-
 mutation {
   createEvent(eventInput: {
     title: "A test",
