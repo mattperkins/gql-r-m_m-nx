@@ -13,9 +13,35 @@ const app = express()
 
 app.use(bodyParser.json())
 
-// app.get('/', (req, res, next) => {
-//   res.send('Endpoint reached!')
-// })
+const events = eventsId => {
+  return Event.find({
+    _id: { $in: eventsId }
+  }).then(events => {
+    return events.map(event => {
+      return {
+        ...event._doc,
+        _id: event.id,
+        creator: user.bind(this, event.creator)
+      }
+    })
+  })
+    .catch(err => { throw err })
+}
+
+// used by creator:
+const user = userId => {
+  return User.findById(userId)
+    .then(user => {
+      return {
+        ...user._doc,
+        _id: user.id,
+        createdEvents: events.bind(this, user._doc.createdEvents)
+      }
+    })
+    .catch(err => {
+      throw err
+    })
+}
 
 // middleware to parse schema queries and resolvers
 app.use('/graphql', graphqlHttp({
@@ -70,16 +96,13 @@ app.use('/graphql', graphqlHttp({
       // mongoose call static methods on the Event constructor 
       //  'return' indicates it as async to graphql
       return Event.find()
-        .populate('creator')
         .then(events => {
           return events.map(event => {
             return {
               ...event._doc,
               _id: event.id,
-              creator: {
-                ...event._doc.creator._doc,
-                _id: event._doc.creator.id
-              }
+              // const user from above 
+              creator: user.bind(this, event._doc.creator)
             }
           })
         })
@@ -102,7 +125,11 @@ app.use('/graphql', graphqlHttp({
       return event
         .save()
         .then(result => {
-          createdEvent = { ...result._doc, _id: result._doc._id.toString() }
+          createdEvent = {
+            ...result._doc,
+            _id: result._doc._id.toString(),
+            creator: user.bind(this, result._doc.creator)
+          }
           return User.findById('5c57480aaea91030abe18c8b')
           console.log(result)
         }).then(user => {
