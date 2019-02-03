@@ -70,11 +70,15 @@ app.use('/graphql', graphqlHttp({
       // mongoose call static methods on the Event constructor 
       //  'return' indicates it as async to graphql
       return Event.find()
+        .populate('creator')
         .then(events => {
           return events.map(event => {
             // core event data properties sans meta (via mongoose)
             // _id:event.id = mongoose method/convesion of id to graphql id
-            return { ...event._doc, _id: event.id }
+            return {
+              ...event._doc,
+              _id: event.id
+            }
           })
         })
         .catch(err => {
