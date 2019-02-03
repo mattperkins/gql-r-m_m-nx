@@ -3,9 +3,11 @@ const bodyParser = require("body-parser")
 const graphqlHttp = require("express-graphql")
 const { buildSchema } = require("graphql")
 const mongoose = require("mongoose")
+const bcrypt = require("bcryptjs")
 
 // consume model / schema
 const Event = require("./models/event")
+const User = require("./models/user")
 
 const app = express()
 
@@ -27,11 +29,22 @@ app.use('/graphql', graphqlHttp({
       date: String!
     }
 
+    type User {
+      _id: ID!
+      email: String!
+      password: String
+    }
+
     input EventInput {
       title: String! 
       description: String! 
       price: Float! 
       date: String!
+    }
+
+    input UserInput {
+      email: String!
+      password: String!
     }
 
     type RootQuery {
@@ -40,6 +53,7 @@ app.use('/graphql', graphqlHttp({
 
     type RootMutation {
       createEvent(eventInput: EventInput): Event
+      createUser(userInput: UserInput): User
     }
 
     schema {
@@ -66,7 +80,7 @@ app.use('/graphql', graphqlHttp({
         })
     },
     // 'createEvent' resolver corresponding to the 'createEvent' RootMutation (which accepts arguments (args) === name: String)
-    createEvent: (args) => {
+    createEvent: args => {
       const event = new Event({
         title: args.eventInput.title,
         description: args.eventInput.description,
@@ -87,6 +101,16 @@ app.use('/graphql', graphqlHttp({
           throw err
         })
       return event
+    },
+    createUser: args => {
+      // 12 rounds of salt
+      bcrypt.hash(args.userInput.password, 12)
+      // add logic to create user in db
+      const user = new User({
+        // from graphql UserInput schema definitions
+        email: args.userInput.email,
+        password: args.userInput.password
+      })
     }
   },
   graphiql: true
