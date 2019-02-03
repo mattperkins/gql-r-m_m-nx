@@ -103,18 +103,24 @@ app.use('/graphql', graphqlHttp({
       return event
     },
     createUser: args => {
-      // 12 rounds of salt
-      return bcrypt
-        .hash(args.userInput.password, 12)
-        .then(hashedPassword => {
-          // add logic to create user in db
-          const user = new User({
-            // from graphql UserInput schema definitions
-            email: args.userInput.email,
-            password: hashedPassword
-          })
-          return user.save()
+      return User.findOne({
+        email: args.userInput.email
+      }).then(user => {
+        if (user) {
+          throw new Error('User already exists!')
+        }
+        // 12 rounds of salt
+        return bcrypt
+          .hash(args.userInput.password, 12)
+      }).then(hashedPassword => {
+        // add logic to create user in db
+        const user = new User({
+          // from graphql UserInput schema definitions
+          email: args.userInput.email,
+          password: hashedPassword
         })
+        return user.save()
+      })
         .then(result => {
           // using virtual mongoose getter for _id (see other _id comments)
           return { ...result._doc, password: null, _id: result.id }
