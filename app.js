@@ -105,12 +105,17 @@ app.use('/graphql', graphqlHttp({
     createUser: args => {
       // 12 rounds of salt
       bcrypt.hash(args.userInput.password, 12)
-      // add logic to create user in db
-      const user = new User({
-        // from graphql UserInput schema definitions
-        email: args.userInput.email,
-        password: args.userInput.password
-      })
+        .then(hashedPassword => {
+          // add logic to create user in db
+          const user = new User({
+            // from graphql UserInput schema definitions
+            email: args.userInput.email,
+            password: hashedPassword
+          })
+        })
+        .catch(err => {
+          throw err
+        })
     }
   },
   graphiql: true
