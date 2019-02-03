@@ -73,11 +73,13 @@ app.use('/graphql', graphqlHttp({
         .populate('creator')
         .then(events => {
           return events.map(event => {
-            // core event data properties sans meta (via mongoose)
-            // _id:event.id = mongoose method/convesion of id to graphql id
             return {
               ...event._doc,
-              _id: event.id
+              _id: event.id,
+              creator: {
+                ...event._doc.creator._doc,
+                _id: event._doc.creator.id
+              }
             }
           })
         })
@@ -92,7 +94,7 @@ app.use('/graphql', graphqlHttp({
         description: args.eventInput.description,
         price: +args.eventInput.price,
         date: new Date(args.eventInput.date),
-        creator: "5c570b25a8bd972b93f853b3"
+        creator: '5c57480aaea91030abe18c8b'
       })
       console.log(args)
       let createdEvent
