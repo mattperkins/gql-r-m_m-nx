@@ -62,6 +62,17 @@ app.use('/graphql', graphqlHttp({
         date: new Date(args.eventInput.date)
       })
       console.log(args)
+      // Event object based on mongoose model
+      return event
+        .save()
+        .then(result => {
+          console.log(result)
+          // core properties sans meta (via mongoose)
+          return { ...result._doc }
+        }).catch(err => {
+          console.log(err)
+          throw err
+        })
       return event
     }
   },
