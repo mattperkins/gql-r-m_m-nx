@@ -85,18 +85,28 @@ app.use('/graphql', graphqlHttp({
         title: args.eventInput.title,
         description: args.eventInput.description,
         price: +args.eventInput.price,
-        date: new Date(args.eventInput.date)
+        date: new Date(args.eventInput.date),
+        creator: "5c570b25a8bd972b93f853b3"
       })
       console.log(args)
+      let createdEvent
       // Event object based on mongoose model
       return event
         .save()
         .then(result => {
+          createdEvent = { ...result._doc, _id: result._doc._id.toString() }
+          return User.findById('5c5711f9759fc62c1785d591')
           console.log(result)
-          // core event data properties sans meta (via mongoose)
-          // _id = alternative mongoose method/convesion of id to graphql id
-          return { ...result._doc, _id: result._doc._id.toString() }
-        }).catch(err => {
+        }).then(user => {
+          if (!user) {
+            throw new Error('User not found')
+          }
+          user.createdEvents.push(event)
+          return user.save()
+        }).then(result => {
+          return createdEvent
+        })
+        .catch(err => {
           console.log(err)
           throw err
         })
