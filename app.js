@@ -117,7 +117,7 @@ app.use('/graphql', graphqlHttp({
         })
         .then(result => {
           // using virtual mongoose getter for _id (see other _id comments)
-          return { ...result._doc, _id: result.id }
+          return { ...result._doc, password: null, _id: result.id }
         })
         .catch(err => {
           throw err
