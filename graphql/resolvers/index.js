@@ -90,10 +90,10 @@ module.exports = {
   },
   createUser: async args => {
     try {
-      const createUser = await User.findOne({
+      const existingUser = await User.findOne({
         email: args.userInput.email
       })
-      if (user) {
+      if (existingUser) {
         throw new Error('User already exists!')
       }
       const hashedPassword = await bcrypt
