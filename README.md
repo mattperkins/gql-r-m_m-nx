@@ -32,10 +32,27 @@ mutation {
 query {
   events {
     _id
-    date
     title
     description
     price
+    date
+    creator {
+      _id
+      email
+      password
+      createdEvents{
+        _id
+        title
+        description
+        price
+        date 
+        creator{
+          _id
+          email
+          password
+        }
+      }
+    }
   }
 }
 
