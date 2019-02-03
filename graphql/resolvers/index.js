@@ -55,6 +55,8 @@ module.exports = {
     }
   },
 
+
+
   createEvent: async args => {
     const event = new Event({
       title: args.eventInput.title,
@@ -85,7 +87,6 @@ module.exports = {
       console.log(err)
       throw err
     }
-    return event
   },
   createUser: args => {
     return User.findOne({
